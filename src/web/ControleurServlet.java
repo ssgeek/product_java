@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.mysql.cj.ParseInfo;
+
 import metier.IProductMetier;
 import metier.Product;
 import metier.ProductMetierImpl;
@@ -25,18 +27,50 @@ public class ControleurServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
-		req.getRequestDispatcher("viewProduct.jsp").forward(req, resp);
+		doPost(req, resp);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		ProductModel mProduct = new ProductModel();
-		mProduct.setKword(req.getParameter("kword"));
-		List<Product> products = metier.productsByKeyWord(mProduct.getKword());
-		System.out.println(products);
-		mProduct.setProducts(products);
-		req.setAttribute("modelProduct", mProduct.getProducts());
+		
+		
+		String action = req.getParameter("action");
+		if(action != null) {
+			
+			if(action.equals("search")) {
+				
+				mProduct.setKword(req.getParameter("kword"));
+				List<Product> products = metier.productsByKeyWord(mProduct.getKword());
+				mProduct.setProducts(products);
+				
+			}
+			else if (action.equals("save")) {
+				
+				Product p = new Product();
+				p.setReference(req.getParameter("reference"));
+				p.setTitle(req.getParameter("title"));
+				p.setPrice(Double.parseDouble(req.getParameter("price")));
+				p.setQuantity(Integer.parseInt(req.getParameter("quantity")));
+				IProductMetier product = new ProductMetierImpl();
+				product.addProduct(p);
+				
+			}
+			else if (action.equals("delete")) {
+				
+				String ref = req.getParameter("reference");
+				IProductMetier p = new ProductMetierImpl();
+				p.deleteProduct(ref);
+				mProduct.setProducts(p.listProducts());
+			}
+			else if (action.equals("edit")) {
+				
+				
+			}
+		}
+		req.setAttribute("modelProduct", mProduct);
+		
 		req.getRequestDispatcher("viewProduct.jsp").forward(req, resp);
 	}
 
