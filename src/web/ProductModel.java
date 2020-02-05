@@ -16,6 +16,7 @@ public class ProductModel {
 	public void setKword(String kword) {
 		this.kword = kword;
 	}
+
 	public List<Product> getProducts() {
 		return products;
 	}
