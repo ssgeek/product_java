@@ -56,6 +56,9 @@ public class ControleurServlet extends HttpServlet {
 				IProductMetier product = new ProductMetierImpl();
 				product.addProduct(p);
 				
+				List<Product> products = metier.listProducts();
+				mProduct.setProducts(products);
+				
 			}
 			else if (action.equals("delete")) {
 				
